@@ -33,6 +33,10 @@ function asdo_enqueue_assets() {
 	wp_enqueue_style( 'asdo-normalize', get_template_directory_uri() . '/css/normalize.css', array(), '8.0.1' );
 	wp_enqueue_style( 'asdo-style', get_stylesheet_uri(), array( 'asdo-normalize' ), '1.0.0' );
 	wp_enqueue_style( 'asdo-prism', get_template_directory_uri() . '/css/prism-tomorrow.css', array(), '1.0.0' );
+
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'asdo_enqueue_assets' );
 
@@ -241,6 +245,76 @@ function asdo_embed_post_shortcode( $atts ) {
 	return $output;
 }
 add_shortcode( 'embed_post', 'asdo_embed_post_shortcode' );
+
+/**
+ * Custom comment callback with microformats2 markup.
+ *
+ * Opens <li> but does not close it — WordPress handles closing for threaded comments.
+ *
+ * @param WP_Comment $comment The comment object.
+ * @param array      $args    Formatting arguments.
+ * @param int        $depth   Depth of the comment in the thread.
+ */
+function asdo_comment_callback( $comment, $args, $depth ) {
+	$tag = ( 'div' === $args['style'] ) ? 'div' : 'li';
+	?>
+	<<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( 'h-entry', $comment ); ?>>
+		<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
+			<footer class="comment-meta">
+				<div class="comment-author vcard p-author h-card">
+					<?php
+					if ( 0 !== (int) $args['avatar_size'] ) {
+						echo get_avatar( $comment, $args['avatar_size'] );
+					}
+					printf(
+						'<b class="fn p-name">%s</b>',
+						get_comment_author_link( $comment )
+					);
+					?>
+				</div>
+
+				<div class="comment-metadata">
+					<a href="<?php echo esc_url( get_comment_link( $comment, $args ) ); ?>" class="u-url">
+						<time class="dt-published" datetime="<?php comment_date( 'c' ); ?>">
+							<?php
+							printf(
+								/* translators: 1: date, 2: time */
+								esc_html__( '%1$s at %2$s', 'asdo-theme' ),
+								esc_html( get_comment_date( '', $comment ) ),
+								esc_html( get_comment_time() )
+							);
+							?>
+						</time>
+					</a>
+					<?php edit_comment_link( esc_html__( 'Edit', 'asdo-theme' ), '<span class="edit-link">', '</span>' ); ?>
+				</div>
+
+				<?php if ( '0' === $comment->comment_approved ) : ?>
+					<p class="comment-awaiting-moderation"><?php esc_html_e( 'Your comment is awaiting moderation.', 'asdo-theme' ); ?></p>
+				<?php endif; ?>
+			</footer>
+
+			<div class="comment-content e-content">
+				<?php comment_text(); ?>
+			</div>
+
+			<?php
+			comment_reply_link(
+				array_merge(
+					$args,
+					array(
+						'add_below' => 'div-comment',
+						'depth'     => $depth,
+						'max_depth' => $args['max_depth'],
+						'before'    => '<div class="reply">',
+						'after'     => '</div>',
+					)
+				)
+			);
+			?>
+		</article>
+	<?php
+}
 
 // Include custom fields.
 require_once get_template_directory() . '/inc/custom-fields.php';
