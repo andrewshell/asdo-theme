@@ -1,31 +1,46 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Search results template.
+ *
+ * @package asdo-blog
+ */
 
-<h1>Search Results for: <?php echo esc_html(get_search_query()); ?></h1>
+get_header();
+?>
+
+<h1>Search Results for: <?php echo esc_html( get_search_query() ); ?></h1>
 
 <?php get_search_form(); ?>
 
-<?php if (have_posts()) : ?>
-  <?php while (have_posts()) : the_post(); ?>
-    <article class="post-list-item">
-      <section>
-        <header>
-          <h2>
-            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-          </h2>
-          <small><?php echo esc_html(get_the_date('F j, Y')); ?></small>
-        </header>
-        <p><?php echo esc_html(asdo_truncate(get_the_content(), 280)); ?></p>
-      </section>
-    </article>
-  <?php endwhile; ?>
+<?php if ( have_posts() ) : ?>
+	<?php
+	while ( have_posts() ) :
+		the_post();
+		?>
+	<article class="post-list-item">
+		<section>
+		<header>
+			<h2>
+			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+			</h2>
+			<small><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></small>
+		</header>
+		<p><?php echo esc_html( asdo_truncate( get_the_content(), 280 ) ); ?></p>
+		</section>
+	</article>
+	<?php endwhile; ?>
 
-  <?php the_posts_pagination(array(
-      'prev_text' => '&larr; Previous',
-      'next_text' => 'Next &rarr;',
-  )); ?>
+	<?php
+	the_posts_pagination(
+		array(
+			'prev_text' => '&larr; Previous',
+			'next_text' => 'Next &rarr;',
+		)
+	);
+	?>
 <?php else : ?>
-  <p>No results found. Try a different search term.</p>
-  <?php get_search_form(); ?>
+	<p>No results found. Try a different search term.</p>
+	<?php get_search_form(); ?>
 <?php endif; ?>
 
 <?php get_footer(); ?>
