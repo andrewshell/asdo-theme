@@ -1,19 +1,23 @@
 /*
 Theme Name: Andrew Shell's Weblog
-Theme URI: https://blog.andrewshell.org/
+Theme URI: https://github.com/andrewshell/asdo-theme
 Author: Andrew Shell
-Author URI: https://blog.andrewshell.org/
+Author URI: https://andrewshell.org/
 Description: A single-author blog theme with IndieWeb integration, microformats, and schema.org markup.
 Version: 1.0.0
-Text Domain: asdo-blog
+Text Domain: asdo-theme
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Requires at least: 6.0
+Requires PHP: 8.1
+GitHub Theme URI: https://github.com/andrewshell/asdo-theme
+Primary Branch: main
 */
 
 /* CSS Custom Properties Definitions */
 
 :root {
-  --maxWidth-none: 'none';
+  --maxWidth-none: "none";
   --maxWidth-xs: 20rem;
   --maxWidth-sm: 24rem;
   --maxWidth-md: 28rem;
@@ -22,9 +26,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
   --maxWidth-2xl: 42rem;
   --maxWidth-3xl: 48rem;
   --maxWidth-4xl: 56rem;
-  --maxWidth-full: '100%';
+  --maxWidth-full: "100%";
   --maxWidth-wrapper: var(--maxWidth-2xl);
-  --spacing-px: '1px';
+  --spacing-px: "1px";
   --spacing-0: 0;
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
@@ -40,12 +44,12 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
   --spacing-24: 6rem;
   --spacing-32: 8rem;
   --fontFamily-sans:
-    -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto;
+    -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
   --fontFamily-serif:
-    'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+    "Iowan Old Style", "Palatino Linotype", "URW Palladio L", P052, serif;
   --fontFamily-mono:
-    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas,
-    'DejaVu Sans Mono', monospace;
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    "DejaVu Sans Mono", monospace;
   --content-letter-spacing: -0.01em;
   --head-nav-gap: 3.2rem;
   --font-body: var(--fontFamily-serif);
@@ -338,7 +342,7 @@ a:focus {
   padding: var(--spacing-10) var(--spacing-5);
 }
 
-.global-wrapper[data-is-root-path='true'] .bio {
+.global-wrapper[data-is-root-path="true"] .bio {
   margin-bottom: var(--spacing-20);
 }
 
