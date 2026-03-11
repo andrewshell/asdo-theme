@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="ASDO Theme">
+    <description>PHP_CodeSniffer configuration for the ASDO WordPress theme.</description>
+
+    <rule ref="WordPress"/>
+    <rule ref="PHPCompatibilityWP"/>
+
+    <config name="minimum_supported_wp_version" value="6.0"/>
+    <config name="testVersion" value="8.1-"/>
+
+    <file>.</file>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+</ruleset>
