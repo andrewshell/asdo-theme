@@ -202,6 +202,21 @@ function asdo_feed_link( $url, $feed ) {
 add_filter( 'feed_link', 'asdo_feed_link', 10, 2 );
 
 /**
+ * Prevent redirect_canonical from redirecting /rss.xml to /rss.xml/feed/.
+ *
+ * @param string $redirect_url  The canonical redirect URL.
+ * @param string $requested_url The originally requested URL.
+ * @return string|false
+ */
+function asdo_disable_rss_redirect( $redirect_url, $requested_url ) {
+	if ( preg_match( '#/rss\.xml$#', $requested_url ) ) {
+		return false;
+	}
+	return $redirect_url;
+}
+add_filter( 'redirect_canonical', 'asdo_disable_rss_redirect', 10, 2 );
+
+/**
  * Shortcode: [embed_post slug="post-slug"].
  *
  * Embeds the content of a post inline.
