@@ -12,7 +12,7 @@
 <ul class="hlist">
 <li><strong>Social:</strong></li>
 <li><a href="<?php echo esc_url( get_bloginfo( 'rss2_url' ) ); ?>">RSS</a></li>
-<li><a rel="me" href="https://twitter.com/andrewshell">Twitter</a></li>
+<li><a rel="me" href="https://x.com/andrewshell">X</a></li>
 <li><a rel="me" href="https://indieweb.social/@andrewshell">Mastodon</a></li>
 <li><a rel="me" href="https://github.com/andrewshell">GitHub</a></li>
 <li><a rel="me" href="https://gravatar.com/andrewshell">Gravatar</a></li>
