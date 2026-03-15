@@ -18,9 +18,6 @@
 	<link rel="icon" type="image/png" sizes="16x16" href="<?php echo esc_url( get_theme_file_uri( 'img/favicon-16x16.png' ) ); ?>">
 	<link rel="manifest" href="<?php echo esc_url( get_theme_file_uri( 'img/site.webmanifest' ) ); ?>">
 
-	<link rel="webmention" href="https://webmention.io/blog.andrewshell.org/webmention" />
-	<link rel="alternate" type="application/activity+json" href="https://fed.brid.gy/r/https%3A%2F%2Fblog.andrewshell.org%2F">
-
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
