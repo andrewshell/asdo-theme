@@ -23,7 +23,7 @@ All posts use the "essays" category and render via `template-parts/content-essay
 
 ### Key Files
 
-- **`functions.php`** — Theme setup, asset enqueuing, analytics, category auto-creation, RSS rewrite rules, `[embed_post]` shortcode, and helper functions
+- **`functions.php`** — Theme setup, asset enqueuing, analytics, category auto-creation, RSS rewrite rules, and helper functions
 - **`front-page.php`** — Homepage with bio and recent posts feed (uses `asdo_recent_content()` which filters to current month if enough posts exist)
 - **`page-essays.php`** / **`page-search.php`** — Custom page templates (assigned by slug)
 
