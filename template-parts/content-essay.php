@@ -9,25 +9,9 @@
 <article class="blog-post h-entry" itemscope itemtype="https://schema.org/BlogPosting">
 <header>
 	<h1 class="p-name" itemprop="headline"><?php the_title(); ?></h1>
-<?php
-$enclosure_url = get_post_meta( get_the_ID(), 'enclosure_url', true );
-if ( $enclosure_url ) :
-	$enclosure_type = get_post_meta( get_the_ID(), 'enclosure_type', true );
-	$enclosure_type = $enclosure_type ? $enclosure_type : 'audio/mpeg';
-	?>
-<audio controls><source src="<?php echo esc_url( $enclosure_url ); ?>" type="<?php echo esc_attr( $enclosure_type ); ?>">Your browser does not support the audio tag.</audio>
-<?php endif; ?>
 </header>
 <section class="e-content" itemprop="articleBody">
 <?php the_content(); ?>
-<?php
-$canonical_href = get_post_meta( get_the_ID(), 'canonical_href', true );
-if ( $canonical_href ) :
-	$canonical_name = get_post_meta( get_the_ID(), 'canonical_name', true );
-	$canonical_name = $canonical_name ? $canonical_name : 'my Substack newsletter';
-	?>
-<p><a href="<?php echo esc_url( $canonical_href ); ?>">This essay was originally published on <?php echo esc_html( $canonical_name ); ?>.</a></p>
-<?php endif; ?>
 <p>
 <a href="<?php the_permalink(); ?>" class="u-url" rel="me" itemprop="url"><time class="small dt-published" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( 'Y-m-d' ) ); ?>">Published <?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></time></a>
 <?php

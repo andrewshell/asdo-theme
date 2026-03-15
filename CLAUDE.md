@@ -19,16 +19,11 @@ This is a single-author WordPress blog theme ("Andrew Shell's Weblog") focused o
 
 ### Post Types & Content Routing
 
-Posts are routed by category in `single.php`:
-- **"essays"** category → `template-parts/content-essay.php` (BlogPosting schema, full articles with optional audio enclosure)
-- **"updates"** category → `template-parts/content-update.php` (SocialMediaPosting schema, short-form posts)
-
-Helper functions `asdo_is_essay()` and `asdo_is_update()` in `functions.php` check category membership.
+All posts use the "essays" category and render via `template-parts/content-essay.php` (BlogPosting schema).
 
 ### Key Files
 
 - **`functions.php`** — Theme setup, asset enqueuing, analytics, category auto-creation, RSS rewrite rules, `[embed_post]` shortcode, and helper functions
-- **`inc/custom-fields.php`** — Custom meta boxes for canonical URL/source name and audio enclosure fields
 - **`front-page.php`** — Homepage with bio and recent posts feed (uses `asdo_recent_content()` which filters to current month if enough posts exist)
 - **`page-essays.php`** / **`page-search.php`** — Custom page templates (assigned by slug)
 

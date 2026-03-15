@@ -65,24 +65,6 @@ function asdo_analytics() {
 add_action( 'wp_head', 'asdo_analytics' );
 
 /**
- * Check if current post is in the "essays" category.
- *
- * @return bool
- */
-function asdo_is_essay() {
-	return has_category( 'essays' );
-}
-
-/**
- * Check if current post is in the "updates" category.
- *
- * @return bool
- */
-function asdo_is_update() {
-	return has_category( 'updates' );
-}
-
-/**
  * Strip HTML and truncate content at a word boundary.
  *
  * @param string $content The content to truncate.
@@ -106,7 +88,7 @@ function asdo_truncate( $content, $length = 280 ) {
 }
 
 /**
- * Get recent content from essays and updates categories.
+ * Get recent content from the essays category.
  *
  * @param int $min Minimum number of posts to return.
  * @return array
@@ -115,7 +97,7 @@ function asdo_recent_content( $min = 5 ) {
 	$args = array(
 		'post_type'      => 'post',
 		'post_status'    => 'publish',
-		'category_name'  => 'essays,updates',
+		'category_name'  => 'essays',
 		'orderby'        => 'date',
 		'order'          => 'DESC',
 		'posts_per_page' => max( $min, 20 ),
@@ -151,9 +133,6 @@ function asdo_recent_content( $min = 5 ) {
 function asdo_create_categories() {
 	if ( ! term_exists( 'essays', 'category' ) ) {
 		wp_insert_term( 'Essays', 'category', array( 'slug' => 'essays' ) );
-	}
-	if ( ! term_exists( 'updates', 'category' ) ) {
-		wp_insert_term( 'Updates', 'category', array( 'slug' => 'updates' ) );
 	}
 }
 add_action( 'init', 'asdo_create_categories' );
@@ -331,5 +310,3 @@ function asdo_comment_callback( $comment, $args, $depth ) {
 	<?php
 }
 
-// Include custom fields.
-require_once get_template_directory() . '/inc/custom-fields.php';

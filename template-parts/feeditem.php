@@ -11,25 +11,20 @@ if ( ! isset( $feed_post ) ) {
 }
 
 setup_postdata( $feed_post );
-$is_update = has_category( 'updates', $feed_post );
 ?>
 <article class="feed-item h-entry" itemscope itemtype="https://schema.org/BlogPosting">
 	<div class="feed-content">
-	<?php if ( ! $is_update && get_the_title( $feed_post ) ) : ?>
+	<?php if ( get_the_title( $feed_post ) ) : ?>
 		<h3 class="feed-title p-name" itemprop="headline">
 		<a href="<?php echo esc_url( get_permalink( $feed_post ) ); ?>" class="u-url" itemprop="url"><?php echo esc_html( get_the_title( $feed_post ) ); ?></a>
 		</h3>
 	<?php endif; ?>
 
 	<div class="feed-excerpt e-content" itemprop="articleBody">
-		<?php if ( $is_update ) : ?>
-			<?php echo wp_kses_post( apply_filters( 'the_content', $feed_post->post_content ) ); ?>
-		<?php else : ?>
 		<p>
 			<?php echo esc_html( asdo_truncate( $feed_post->post_content, 280 ) ); ?>
 		<a href="<?php echo esc_url( get_permalink( $feed_post ) ); ?>" class="read-more" rel="nofollow">Read more &rarr;</a>
 		</p>
-		<?php endif; ?>
 	</div>
 
 	<div class="feed-meta">

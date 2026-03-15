@@ -11,13 +11,6 @@
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<?php
-	$canonical_href = get_post_meta( get_the_ID(), 'canonical_href', true );
-	if ( $canonical_href ) :
-		?>
-	<link rel="canonical" href="<?php echo esc_url( $canonical_href ); ?>" />
-	<?php endif; ?>
-
 	<link rel="alternate" href="<?php echo esc_url( get_bloginfo( 'rss2_url' ) ); ?>" type="application/rss+xml" title="<?php bloginfo( 'name' ); ?>">
 
 	<link rel="apple-touch-icon" sizes="180x180" href="<?php echo esc_url( get_theme_file_uri( 'img/apple-touch-icon.png' ) ); ?>">
