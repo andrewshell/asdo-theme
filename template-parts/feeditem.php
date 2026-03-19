@@ -26,6 +26,13 @@ setup_postdata( $feed_post );
 		</p>
 	</div>
 
+	<p class="feed-more">
+		<a href="<?php echo esc_url( get_permalink( $feed_post ) ); ?>"
+		aria-label="Continue reading: <?php echo esc_attr( get_the_title( $feed_post ) ); ?>">
+			Continue reading<span aria-hidden="true"> &rarr;</span>
+		</a>
+	</p>
+
 	<div class="feed-meta">
 		<p>
 		<time class="feed-date dt-published" datetime="<?php echo esc_attr( get_the_date( 'c', $feed_post ) ); ?>">
