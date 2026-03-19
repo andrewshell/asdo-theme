@@ -13,7 +13,7 @@
 <section class="e-content" itemprop="articleBody">
 <?php the_content(); ?>
 <p>
-<a href="<?php the_permalink(); ?>" class="u-url" rel="me" itemprop="url"><time class="small dt-published" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( 'Y-m-d' ) ); ?>">Published <?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></time></a>
+<a href="<?php the_permalink(); ?>" class="u-url" itemprop="url"><time class="small dt-published" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( 'Y-m-d' ) ); ?>">Published <?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></time></a>
 <?php
 $created  = get_the_date( 'Y-m-d' );
 $modified = get_the_modified_date( 'Y-m-d' );

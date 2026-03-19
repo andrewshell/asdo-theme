@@ -6,17 +6,15 @@
  */
 
 ?>
-<div class="bio h-card" itemscope itemtype="https://schema.org/Person">
+<div class="bio h-card" itemprop="author" itemscope itemtype="https://schema.org/Person">
 	<div class="bio-avatar">
 	<img
 		class="u-photo"
 		itemprop="image"
-		itemscope
-		itemtype="https://schema.org/ImageObject"
 		src="<?php echo esc_url( get_template_directory_uri() . '/img/profile-pic-100.png' ); ?>"
 		width="50"
 		height="50"
-		alt="Profile Picture"
+		alt="Andrew Shell"
 	/>
 	</div>
 
@@ -27,7 +25,7 @@
 		href="<?php echo esc_url( home_url( '/' ) ); ?>"
 		rel="author me"
 		class="p-name u-url"
-		itemprop="name"
+		itemprop="url"
 		><strong
 			><span class="p-given-name" itemprop="givenName">Andrew</span>
 			<span class="p-family-name" itemprop="familyName">Shell</span></strong
@@ -35,9 +33,9 @@
 		>, a
 		<span class="p-job-title" itemprop="jobTitle">Senior Web Engineer</span>
 		from
-		<span class="adr"
-		><span class="p-locality">Madison</span>,
-		<abbr class="p-region" title="Wisconsin">WI</abbr></span
+		<span class="adr" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+			<span class="p-locality" itemprop="addressLocality">Madison</span>,
+			<abbr class="p-region" itemprop="addressRegion" title="Wisconsin">WI</abbr></span
 		>.<br />
 	</p>
 	<ul class="hlist">
