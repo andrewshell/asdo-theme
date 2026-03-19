@@ -83,6 +83,39 @@ Primary Branch: main
 	--color-text: #240b00;
 }
 
+/* Screen Reader Text */
+
+.screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+	background-color: var(--color-base-3);
+	clip: auto !important;
+	clip-path: none;
+	color: var(--color-text);
+	display: block;
+	font-size: var(--fontSize-1);
+	font-weight: var(--fontWeight-bold);
+	height: auto;
+	left: var(--spacing-2);
+	line-height: normal;
+	padding: var(--spacing-4);
+	text-decoration: none;
+	top: var(--spacing-2);
+	width: auto;
+	z-index: 100000;
+}
+
 /* HTML elements */
 
 *,
@@ -336,6 +369,13 @@ a:focus {
 	text-decoration: none;
 	background-color: var(--color-primary);
 	color: var(--color-body);
+}
+
+a:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
+	background-color: transparent;
+	color: var(--color-primary);
 }
 
 /* Custom classes */
@@ -612,6 +652,15 @@ small,
 	font-size: var(--fontSize-1);
 	border: 1px solid var(--color-base);
 	margin-bottom: var(--spacing-4);
+}
+
+.comment-respond input[type="text"]:focus,
+.comment-respond input[type="email"]:focus,
+.comment-respond input[type="url"]:focus,
+.comment-respond textarea:focus {
+	outline: 2px solid var(--color-primary);
+	outline-offset: -1px;
+	border-color: var(--color-primary);
 }
 
 .comment-respond textarea {

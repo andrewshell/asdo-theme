@@ -23,7 +23,7 @@ endif;
 	$recent_posts = asdo_recent_content( 5 );
 	if ( ! empty( $recent_posts ) ) :
 		?>
-	<div class="feed">
+	<div class="feed h-feed">
 		<?php
 		$count = count( $recent_posts );
 		foreach ( $recent_posts as $i => $feed_post ) :

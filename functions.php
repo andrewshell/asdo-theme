@@ -196,6 +196,45 @@ function asdo_disable_rss_redirect( $redirect_url, $requested_url ) {
 add_filter( 'redirect_canonical', 'asdo_disable_rss_redirect', 10, 2 );
 
 /**
+ * Output Open Graph, Twitter Card, and meta description tags.
+ */
+function asdo_meta_tags() {
+	$title       = esc_attr( wp_get_document_title() );
+	$url         = esc_url( get_permalink() ? get_permalink() : home_url( '/' ) );
+	$site_name   = esc_attr( get_bloginfo( 'name' ) );
+	$description = get_bloginfo( 'description' );
+	$type        = 'website';
+	$image       = esc_url( get_theme_file_uri( 'img/apple-touch-icon.png' ) );
+
+	if ( is_singular() ) {
+		$type = 'article';
+		$post = get_queried_object();
+		if ( $post && ! empty( $post->post_content ) ) {
+			$description = asdo_truncate( $post->post_content, 160 );
+		}
+		if ( has_post_thumbnail() ) {
+			$image = esc_url( get_the_post_thumbnail_url( null, 'large' ) );
+		}
+	}
+
+	$description = esc_attr( $description );
+	?>
+	<meta name="description" content="<?php echo esc_attr( $description ); ?>">
+	<meta property="og:title" content="<?php echo esc_attr( $title ); ?>">
+	<meta property="og:description" content="<?php echo esc_attr( $description ); ?>">
+	<meta property="og:url" content="<?php echo esc_url( $url ); ?>">
+	<meta property="og:type" content="<?php echo esc_attr( $type ); ?>">
+	<meta property="og:site_name" content="<?php echo esc_attr( $site_name ); ?>">
+	<meta property="og:image" content="<?php echo esc_url( $image ); ?>">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="<?php echo esc_attr( $title ); ?>">
+	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>">
+	<meta name="twitter:image" content="<?php echo esc_url( $image ); ?>">
+	<?php
+}
+add_action( 'wp_head', 'asdo_meta_tags' );
+
+/**
  * Custom comment callback with microformats2 markup.
  *
  * Opens <li> but does not close it — WordPress handles closing for threaded comments.
@@ -239,7 +278,7 @@ function asdo_comment_callback( $comment, $args, $depth ) {
 				</div>
 
 				<?php if ( '0' === $comment->comment_approved ) : ?>
-					<p class="comment-awaiting-moderation"><?php esc_html_e( 'Your comment is awaiting moderation.', 'asdo-theme' ); ?></p>
+					<p class="comment-awaiting-moderation" role="status"><?php esc_html_e( 'Your comment is awaiting moderation.', 'asdo-theme' ); ?></p>
 				<?php endif; ?>
 			</footer>
 

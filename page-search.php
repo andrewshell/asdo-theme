@@ -21,6 +21,7 @@ $search_query = isset( $_GET['keywords'] ) ? sanitize_text_field( wp_unslash( $_
 ?>
 
 <form role="search" autocomplete="off" method="get" action="<?php echo esc_url( home_url( '/search/' ) ); ?>" class="searchform">
+	<label for="search-input" class="screen-reader-text"><?php esc_html_e( 'Search', 'asdo-theme' ); ?></label>
 	<input type="text" id="search-input" name="keywords" value="<?php echo esc_attr( $search_query ); ?>" />
 	<button type="submit">Search</button>
 </form>

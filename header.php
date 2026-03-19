@@ -21,6 +21,7 @@
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+<a class="screen-reader-text" href="#main"><?php esc_html_e( 'Skip to content', 'asdo-theme' ); ?></a>
 <div class="global-wrapper" 
 <?php
 if ( is_front_page() ) {
@@ -37,4 +38,4 @@ itemscope itemtype="<?php echo esc_attr( is_single() ? 'https://schema.org/BlogP
 <a class="header-link-home" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
 <?php endif; ?>
 </header>
-<main>
+<main id="main">
