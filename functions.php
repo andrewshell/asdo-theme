@@ -137,63 +137,42 @@ function asdo_create_categories() {
 }
 add_action( 'init', 'asdo_create_categories' );
 
-/**
- * Rewrite /rss.xml to the main RSS2 feed.
- */
-function asdo_rss_rewrite() {
-	add_rewrite_rule( '^rss\.xml$', 'index.php?feed=rss2', 'top' );
-}
-add_action( 'init', 'asdo_rss_rewrite' );
-
-/**
- * Flush rewrite rules on theme activation so /rss.xml works immediately.
- */
-function asdo_flush_rewrites() {
-	asdo_rss_rewrite();
-	flush_rewrite_rules();
-}
-add_action( 'after_switch_theme', 'asdo_flush_rewrites' );
-
-/**
- * Remove WordPress default feed links from wp_head (we add our own in header.php).
- */
-function asdo_remove_feed_links() {
-	remove_action( 'wp_head', 'feed_links', 2 );
-	remove_action( 'wp_head', 'feed_links_extra', 3 );
-}
-add_action( 'after_setup_theme', 'asdo_remove_feed_links' );
-
-/**
- * Override the feed permalink to /rss.xml.
+/*
+ * RSS/feed URL rewrite code — commented out for now, will be repurposed later.
  *
- * WordPress normalizes the default feed ('rss2') to '' before applying this filter.
+ * function asdo_rss_rewrite() {
+ *     add_rewrite_rule( '^rss\.xml$', 'index.php?feed=rss2', 'top' );
+ * }
+ * add_action( 'init', 'asdo_rss_rewrite' );
  *
- * @param string $url  The feed URL.
- * @param string $feed The feed type.
- * @return string
- */
-function asdo_feed_link( $url, $feed ) {
-	if ( '' === $feed || 'rss2' === $feed ) {
-		return home_url( '/rss.xml' );
-	}
-	return $url;
-}
-add_filter( 'feed_link', 'asdo_feed_link', 10, 2 );
-
-/**
- * Prevent redirect_canonical from redirecting /rss.xml to /rss.xml/feed/.
+ * function asdo_flush_rewrites() {
+ *     asdo_rss_rewrite();
+ *     flush_rewrite_rules();
+ * }
+ * add_action( 'after_switch_theme', 'asdo_flush_rewrites' );
  *
- * @param string $redirect_url  The canonical redirect URL.
- * @param string $requested_url The originally requested URL.
- * @return string|false
+ * function asdo_remove_feed_links() {
+ *     remove_action( 'wp_head', 'feed_links', 2 );
+ *     remove_action( 'wp_head', 'feed_links_extra', 3 );
+ * }
+ * add_action( 'after_setup_theme', 'asdo_remove_feed_links' );
+ *
+ * function asdo_feed_link( $url, $feed ) {
+ *     if ( '' === $feed || 'rss2' === $feed ) {
+ *         return home_url( '/rss.xml' );
+ *     }
+ *     return $url;
+ * }
+ * add_filter( 'feed_link', 'asdo_feed_link', 10, 2 );
+ *
+ * function asdo_disable_rss_redirect( $redirect_url, $requested_url ) {
+ *     if ( preg_match( '#/rss\.xml$#', $requested_url ) ) {
+ *         return false;
+ *     }
+ *     return $redirect_url;
+ * }
+ * add_filter( 'redirect_canonical', 'asdo_disable_rss_redirect', 10, 2 );
  */
-function asdo_disable_rss_redirect( $redirect_url, $requested_url ) {
-	if ( preg_match( '#/rss\.xml$#', $requested_url ) ) {
-		return false;
-	}
-	return $redirect_url;
-}
-add_filter( 'redirect_canonical', 'asdo_disable_rss_redirect', 10, 2 );
 
 /**
  * Output Open Graph, Twitter Card, and meta description tags.
