@@ -691,6 +691,44 @@ small,
 	justify-content: space-between;
 }
 
+/* Reactions (ActivityPub likes & reposts) */
+
+.reactions-section {
+	margin-top: var(--spacing-12);
+}
+
+.reaction-group {
+	margin-bottom: var(--spacing-6);
+}
+
+.reaction-title {
+	font-size: var(--fontSize-2);
+	margin-bottom: var(--spacing-3);
+}
+
+.facepile {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacing-2);
+}
+
+.facepile a,
+.facepile span {
+	display: inline-block;
+	line-height: 0;
+	text-decoration: none;
+}
+
+.facepile a:hover,
+.facepile a:focus {
+	background-color: transparent;
+}
+
+.facepile img {
+	border-radius: 50%;
+	display: block;
+}
+
 /* Media queries */
 
 @media (max-width: 42rem) {

@@ -137,43 +137,6 @@ function asdo_create_categories() {
 }
 add_action( 'init', 'asdo_create_categories' );
 
-/*
- * RSS/feed URL rewrite code — commented out for now, will be repurposed later.
- *
- * function asdo_rss_rewrite() {
- *     add_rewrite_rule( '^rss\.xml$', 'index.php?feed=rss2', 'top' );
- * }
- * add_action( 'init', 'asdo_rss_rewrite' );
- *
- * function asdo_flush_rewrites() {
- *     asdo_rss_rewrite();
- *     flush_rewrite_rules();
- * }
- * add_action( 'after_switch_theme', 'asdo_flush_rewrites' );
- *
- * function asdo_remove_feed_links() {
- *     remove_action( 'wp_head', 'feed_links', 2 );
- *     remove_action( 'wp_head', 'feed_links_extra', 3 );
- * }
- * add_action( 'after_setup_theme', 'asdo_remove_feed_links' );
- *
- * function asdo_feed_link( $url, $feed ) {
- *     if ( '' === $feed || 'rss2' === $feed ) {
- *         return home_url( '/rss.xml' );
- *     }
- *     return $url;
- * }
- * add_filter( 'feed_link', 'asdo_feed_link', 10, 2 );
- *
- * function asdo_disable_rss_redirect( $redirect_url, $requested_url ) {
- *     if ( preg_match( '#/rss\.xml$#', $requested_url ) ) {
- *         return false;
- *     }
- *     return $redirect_url;
- * }
- * add_filter( 'redirect_canonical', 'asdo_disable_rss_redirect', 10, 2 );
- */
-
 /**
  * Output Open Graph, Twitter Card, and meta description tags.
  */
@@ -212,6 +175,90 @@ function asdo_meta_tags() {
 	<?php
 }
 add_action( 'wp_head', 'asdo_meta_tags' );
+
+/**
+ * Display ActivityPub likes and reposts as facepiles.
+ */
+function asdo_display_reactions() {
+	$post_id   = get_the_ID();
+	$reactions = get_comments(
+		array(
+			'post_id'  => $post_id,
+			'status'   => 'approve',
+			'type__in' => array( 'like', 'repost' ),
+			'number'   => 200,
+		)
+	);
+
+	if ( empty( $reactions ) ) {
+		return;
+	}
+
+	$grouped = array(
+		'like'   => array(),
+		'repost' => array(),
+	);
+
+	foreach ( $reactions as $reaction ) {
+		if ( isset( $grouped[ $reaction->comment_type ] ) ) {
+			$grouped[ $reaction->comment_type ][] = $reaction;
+		}
+	}
+
+	$labels = array(
+		'like'   => array(
+			/* translators: %d: number of likes */
+			'label' => __( 'Likes (%d)', 'asdo-theme' ),
+			'class' => 'p-like',
+		),
+		'repost' => array(
+			/* translators: %d: number of reposts */
+			'label' => __( 'Reposts (%d)', 'asdo-theme' ),
+			'class' => 'p-repost',
+		),
+	);
+
+	echo '<div class="reactions-section">';
+
+	foreach ( $grouped as $type => $comments ) {
+		if ( empty( $comments ) ) {
+			continue;
+		}
+
+		$count = count( $comments );
+		$label = sprintf( $labels[ $type ]['label'], $count );
+		$class = $labels[ $type ]['class'];
+
+		printf( '<div class="reaction-group %s">', esc_attr( $class ) );
+		printf( '<h3 class="reaction-title">%s</h3>', esc_html( $label ) );
+		echo '<div class="facepile">';
+
+		foreach ( $comments as $comment ) {
+			$author_url = $comment->comment_author_url;
+			$author     = $comment->comment_author;
+			$avatar     = get_avatar( $comment, 32 );
+
+			if ( $author_url ) {
+				printf(
+					'<a href="%s" title="%s" class="u-url">%s</a>',
+					esc_url( $author_url ),
+					esc_attr( $author ),
+					wp_kses_post( $avatar )
+				);
+			} else {
+				printf(
+					'<span title="%s">%s</span>',
+					esc_attr( $author ),
+					wp_kses_post( $avatar )
+				);
+			}
+		}
+
+		echo '</div></div>';
+	}
+
+	echo '</div>';
+}
 
 /**
  * Custom comment callback with microformats2 markup.
