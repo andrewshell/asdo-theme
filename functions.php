@@ -230,7 +230,7 @@ function asdo_display_reactions() {
 		$class = $labels[ $type ]['class'];
 
 		printf( '<div class="reaction-group %s">', esc_attr( $class ) );
-		printf( '<h3 class="reaction-title">%s</h3>', esc_html( $label ) );
+		printf( '<h2 class="reaction-title">%s</h2>', esc_html( $label ) );
 		echo '<div class="facepile">';
 
 		foreach ( $comments as $comment ) {
