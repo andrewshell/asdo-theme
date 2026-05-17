@@ -39,6 +39,7 @@ setup_postdata( $feed_post );
 			<?php echo esc_html( get_the_date( 'F j, Y', $feed_post ) ); ?>
 		</time>
 		</p>
+		<?php echo asdo_category_links( $feed_post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</div>
 	</div>
 </article>

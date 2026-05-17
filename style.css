@@ -248,6 +248,26 @@ h6 {
 	font-size: 70%;
 }
 
+.post-categories {
+	font-size: 70%;
+	margin-top: var(--spacing-2);
+	margin-bottom: var(--spacing-0);
+}
+
+.post-categories a {
+	display: inline-block;
+	margin-right: var(--spacing-2);
+}
+
+.category-header {
+	margin-bottom: var(--spacing-8);
+}
+
+.category-description {
+	font-style: italic;
+	margin-top: var(--spacing-2);
+}
+
 header a,
 header a:visited {
 	color: var(--color-text);

@@ -127,6 +127,42 @@ function asdo_recent_content( $min = 5 ) {
 }
 
 /**
+ * Render a post's categories as a list of links.
+ *
+ * Uses the microformats2 `p-category` class so the links participate in
+ * the same IndieWeb markup as the rest of the theme. Output is fully
+ * escaped internally.
+ *
+ * @param int|WP_Post|null $post Optional. Post or post ID. Defaults to the current post.
+ * @return string HTML, or an empty string when the post has no categories.
+ */
+function asdo_category_links( $post = null ) {
+	if ( is_object( $post ) ) {
+		$post_id = (int) $post->ID;
+	} elseif ( $post ) {
+		$post_id = (int) $post;
+	} else {
+		$post_id = get_the_ID();
+	}
+
+	$categories = get_the_category( $post_id );
+	if ( empty( $categories ) ) {
+		return '';
+	}
+
+	$links = array();
+	foreach ( $categories as $category ) {
+		$links[] = sprintf(
+			'<a href="%s" class="p-category" rel="category">%s</a>',
+			esc_url( get_category_link( $category ) ),
+			esc_html( $category->name )
+		);
+	}
+
+	return '<p class="post-categories">' . implode( ' ', $links ) . '</p>';
+}
+
+/**
  * Output Open Graph, Twitter Card, and meta description tags.
  */
 function asdo_meta_tags() {

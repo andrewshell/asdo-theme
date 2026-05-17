@@ -24,6 +24,7 @@ get_header();
 			<small><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></small>
 		</header>
 		<p><?php echo esc_html( asdo_truncate( get_the_content(), 280 ) ); ?></p>
+		<?php echo asdo_category_links(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</section>
 	</article>
 	<?php endwhile; ?>
