@@ -20,7 +20,6 @@ $essays = new WP_Query(
 	array(
 		'post_type'      => 'post',
 		'post_status'    => 'publish',
-		'category_name'  => 'essays',
 		'orderby'        => 'date',
 		'order'          => 'DESC',
 		'posts_per_page' => -1,

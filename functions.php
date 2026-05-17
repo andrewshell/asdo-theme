@@ -88,7 +88,7 @@ function asdo_truncate( $content, $length = 280 ) {
 }
 
 /**
- * Get recent content from the essays category.
+ * Get recent published posts.
  *
  * @param int $min Minimum number of posts to return.
  * @return array
@@ -97,7 +97,6 @@ function asdo_recent_content( $min = 5 ) {
 	$args = array(
 		'post_type'      => 'post',
 		'post_status'    => 'publish',
-		'category_name'  => 'essays',
 		'orderby'        => 'date',
 		'order'          => 'DESC',
 		'posts_per_page' => max( $min, 20 ),
@@ -126,16 +125,6 @@ function asdo_recent_content( $min = 5 ) {
 
 	return array_slice( $posts, 0, $min );
 }
-
-/**
- * Auto-create required categories on init.
- */
-function asdo_create_categories() {
-	if ( ! term_exists( 'essays', 'category' ) ) {
-		wp_insert_term( 'Essays', 'category', array( 'slug' => 'essays' ) );
-	}
-}
-add_action( 'init', 'asdo_create_categories' );
 
 /**
  * Output Open Graph, Twitter Card, and meta description tags.
