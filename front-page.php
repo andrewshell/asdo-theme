@@ -25,7 +25,8 @@ endif;
 		?>
 	<div class="feed h-feed">
 		<?php
-		$count = count( $recent_posts );
+		$count              = count( $recent_posts );
+		$feed_heading_level = 3;
 		foreach ( $recent_posts as $i => $feed_post ) :
 			include get_template_directory() . '/template-parts/feeditem.php';
 			if ( $i < $count - 1 ) :

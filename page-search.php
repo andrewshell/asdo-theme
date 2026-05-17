@@ -38,24 +38,23 @@ if ( $search_query ) :
 
 	if ( $search_results->have_posts() ) :
 		?>
-<ol class="list-none">
+<div class="feed h-feed">
 		<?php
+		$feed_heading_level = 2;
+		$asdo_first         = true;
 		while ( $search_results->have_posts() ) :
 			$search_results->the_post();
-			?>
-	<li>
-		<article class="post-list-item">
-			<section>
-				<header>
-					<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-					<small><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></small>
-				</header>
-				<p><?php echo esc_html( asdo_truncate( get_the_content(), 280 ) ); ?></p>
-			</section>
-		</article>
-	</li>
-	<?php endwhile; ?>
-</ol>
+			if ( ! $asdo_first ) :
+				?>
+	<hr class="feed-separator">
+				<?php
+			endif;
+			$asdo_first = false;
+			$feed_post  = get_post();
+			include get_template_directory() . '/template-parts/feeditem.php';
+		endwhile;
+		?>
+</div>
 		<?php wp_reset_postdata(); ?>
 	<?php else : ?>
 <p>No results found for "<?php echo esc_html( $search_query ); ?>".</p>
