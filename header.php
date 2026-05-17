@@ -27,7 +27,7 @@
 if ( is_front_page() ) {
 	echo 'data-is-root-path="true"';}
 ?>
-itemscope itemtype="<?php echo esc_attr( is_single() ? 'https://schema.org/BlogPosting' : 'https://schema.org/WebPage' ); ?>">
+>
 <header class="global-header">
 <?php if ( is_front_page() ) : ?>
 <h1 class="main-heading">

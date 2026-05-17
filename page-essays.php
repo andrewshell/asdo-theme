@@ -9,11 +9,11 @@
 get_header();
 ?>
 
-<article class="blog-post" itemscope itemtype="https://schema.org/Article">
+<article class="blog-post">
 <header>
-	<h1 itemprop="headline">All Essays</h1>
+	<h1>All Essays</h1>
 </header>
-<section itemprop="articleBody">
+<section>
 
 <?php
 $essays = new WP_Query(
@@ -42,8 +42,8 @@ if ( $essays->have_posts() ) :
 			$last_month = $this_month;
 		endif;
 		?>
-		<li><a href="<?php the_permalink(); ?>" itemprop="url">
-			<span itemprop="headline"><?php the_title(); ?></span>
+		<li><a href="<?php the_permalink(); ?>">
+			<span><?php the_title(); ?></span>
 		</a></li>
 	<?php endwhile; ?>
 	</ol>

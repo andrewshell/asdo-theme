@@ -9,11 +9,11 @@
 get_header();
 ?>
 
-<article class="blog-post" itemscope itemtype="https://schema.org/Article">
+<article class="blog-post">
 <header>
-	<h1 itemprop="headline">Search</h1>
+	<h1>Search</h1>
 </header>
-<section itemprop="articleBody">
+<section>
 
 <?php
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search form, no state change.
