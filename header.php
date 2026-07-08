@@ -12,6 +12,7 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="alternate" href="<?php echo esc_url( get_bloginfo( 'rss2_url' ) ); ?>" type="application/rss+xml" title="<?php bloginfo( 'name' ); ?>">
+	<link rel="following" href="https://public.andrewshell.org/following.opml">
 
 	<link rel="apple-touch-icon" sizes="180x180" href="<?php echo esc_url( get_theme_file_uri( 'img/apple-touch-icon.png' ) ); ?>">
 	<link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url( get_theme_file_uri( 'img/favicon-32x32.png' ) ); ?>">
