@@ -630,3 +630,45 @@ function asdo_comment_callback( $comment, $args, $depth ) {
 	<?php
 }
 
+/**
+ * URL of the IndieNews syndication target.
+ */
+const ASDO_INDIENEWS_URL = 'https://news.indieweb.org/en';
+
+/**
+ * Whether a post has the "indienews" tag.
+ *
+ * @param int|WP_Post|null $post Optional. Post to check. Defaults to the current post.
+ * @return bool True if the post has the indienews tag.
+ */
+function asdo_is_indienews( $post = null ) {
+	return has_tag( 'indienews', $post );
+}
+
+/**
+ * Output the IndieNews u-category link for posts tagged indienews.
+ */
+function asdo_indienews_link() {
+	if ( ! asdo_is_indienews() ) {
+		return;
+	}
+	?>
+<a href="<?php echo esc_url( ASDO_INDIENEWS_URL ); ?>" class="u-category small">#indienews</a><br>
+	<?php
+}
+
+/**
+ * Send a Webmention to IndieNews when the post is tagged indienews.
+ *
+ * @param string[] $urls    URLs extracted from the post content.
+ * @param int      $post_id The post being sent.
+ * @return string[] The filtered list of Webmention targets.
+ */
+function asdo_indienews_webmention_link( $urls, $post_id ) {
+	if ( asdo_is_indienews( $post_id ) ) {
+		$urls[] = ASDO_INDIENEWS_URL;
+	}
+	return $urls;
+}
+add_filter( 'webmention_links', 'asdo_indienews_webmention_link', 10, 2 );
+

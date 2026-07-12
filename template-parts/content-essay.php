@@ -13,6 +13,7 @@
 <section class="e-content">
 <?php the_content(); ?>
 <p>
+<?php asdo_indienews_link(); ?>
 <a href="<?php the_permalink(); ?>" class="u-url"><time class="small dt-published" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>">Published <?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></time></a>
 <?php
 $created  = get_the_date( 'Y-m-d' );
