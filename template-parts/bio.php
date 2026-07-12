@@ -12,7 +12,7 @@
 $asdo_person = asdo_person_data( asdo_site_author_id() );
 $asdo_url    = '' !== trim( $asdo_person['website'] ) ? $asdo_person['website'] : $asdo_person['url'];
 ?>
-<div class="bio h-card">
+<div class="bio p-author h-card">
 	<div class="bio-avatar">
 	<img
 		class="u-photo"
