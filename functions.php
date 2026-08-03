@@ -909,7 +909,12 @@ function asdo_run_cache_warm( $post_id ) {
 			array(
 				// Bounded deliberately: warming runs before federation on the
 				// same tick, so a slow target delays delivery by this much.
-				'timeout'     => 10,
+				// Keep (number of targets x timeout) well under
+				// WP_CRON_LOCK_TIMEOUT (60s). If warming overruns the lock,
+				// another process steals it and wp-cron.php returns right
+				// after this hook — before activitypub_process_outbox — which
+				// is exactly the ordering ASDO_WARM_DELAY exists to guarantee.
+				'timeout'     => 5,
 				'redirection' => 2,
 				'user-agent'  => 'asdo-cache-warmer (+' . home_url( '/' ) . ')',
 				'headers'     => array( 'Accept' => $accept ),
