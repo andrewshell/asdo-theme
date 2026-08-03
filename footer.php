@@ -26,6 +26,9 @@
 	<a href="https://fediring.net/">Fediring</a>
 	<a href="https://fediring.net/next?host=blog.andrewshell.org">&rarr;</a>
 </p>
+<p>
+	<a href="https://iheartrss.com/"><img src="https://iheartrss.com/iheartrss.svg" alt="I love RSS" width="88" height="31"></a>
+</p>
 </footer>
 </div>
 <?php wp_footer(); ?>

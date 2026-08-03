@@ -477,15 +477,66 @@ add_action( 'personal_options_update', 'asdo_save_user_profile_fields' );
 add_action( 'edit_user_profile_update', 'asdo_save_user_profile_fields' );
 
 /**
- * Display ActivityPub likes and reposts as facepiles.
+ * Comment types rendered as facepiles rather than in the comment list.
+ *
+ * The Webmention plugin's walker strips every type in this list out of the
+ * comment template query (see Webmention\Comment_Walker::comment_query), so
+ * whatever is listed here must be rendered by asdo_display_reactions() or it
+ * will not appear on the post at all. asdo_reaction_comment_count() keeps the
+ * "N comments" heading in sync with the same list.
+ *
+ * @return string[] Comment type slugs, in display order.
+ */
+function asdo_reaction_comment_types() {
+	if ( ! function_exists( 'get_webmention_comment_type_names' ) ) {
+		return array( 'like', 'repost' );
+	}
+
+	$types = get_webmention_comment_type_names();
+
+	// Surface likes and reposts first; keep the plugin's order for the rest.
+	$preferred = array_values( array_intersect( array( 'like', 'repost' ), $types ) );
+
+	return array_values( array_unique( array_merge( $preferred, $types ) ) );
+}
+
+/**
+ * Plural label and microformats class for a reaction comment type.
+ *
+ * @param string $type Comment type slug.
+ * @return array{label: string, class: string, icon: string}
+ */
+function asdo_reaction_type_attrs( $type ) {
+	if ( function_exists( 'get_webmention_comment_type_attr' ) ) {
+		return array(
+			'label' => get_webmention_comment_type_attr( $type, 'label' ),
+			'class' => get_webmention_comment_type_attr( $type, 'class' ),
+			'icon'  => get_webmention_comment_type_attr( $type, 'icon' ),
+		);
+	}
+
+	return array(
+		'label' => ucfirst( $type ) . 's',
+		'class' => 'p-' . $type,
+		'icon'  => '',
+	);
+}
+
+/**
+ * Display webmention/ActivityPub reactions as facepiles.
+ *
+ * Covers every type in asdo_reaction_comment_types() — not just likes and
+ * reposts — so that mentions, bookmarks and the rest are not silently dropped.
  */
 function asdo_display_reactions() {
-	$post_id   = get_the_ID();
+	$types = asdo_reaction_comment_types();
+
+	// An explicit type__in bypasses the Webmention walker's exclusion filter.
 	$reactions = get_comments(
 		array(
-			'post_id'  => $post_id,
+			'post_id'  => get_the_ID(),
 			'status'   => 'approve',
-			'type__in' => array( 'like', 'repost' ),
+			'type__in' => $types,
 			'number'   => 200,
 		)
 	);
@@ -494,29 +545,13 @@ function asdo_display_reactions() {
 		return;
 	}
 
-	$grouped = array(
-		'like'   => array(),
-		'repost' => array(),
-	);
+	$grouped = array_fill_keys( $types, array() );
 
 	foreach ( $reactions as $reaction ) {
 		if ( isset( $grouped[ $reaction->comment_type ] ) ) {
 			$grouped[ $reaction->comment_type ][] = $reaction;
 		}
 	}
-
-	$labels = array(
-		'like'   => array(
-			/* translators: %d: number of likes */
-			'label' => __( 'Likes (%d)', 'asdo-theme' ),
-			'class' => 'p-like',
-		),
-		'repost' => array(
-			/* translators: %d: number of reposts */
-			'label' => __( 'Reposts (%d)', 'asdo-theme' ),
-			'class' => 'p-repost',
-		),
-	);
 
 	echo '<div class="reactions-section">';
 
@@ -525,33 +560,24 @@ function asdo_display_reactions() {
 			continue;
 		}
 
-		$count = count( $comments );
-		$label = sprintf( $labels[ $type ]['label'], $count );
-		$class = $labels[ $type ]['class'];
+		$attrs = asdo_reaction_type_attrs( $type );
 
-		printf( '<div class="reaction-group %s">', esc_attr( $class ) );
-		printf( '<h2 class="reaction-title">%s</h2>', esc_html( $label ) );
+		printf( '<div class="reaction-group %s">', esc_attr( $attrs['class'] ) );
+		printf(
+			'<h2 class="reaction-title">%s</h2>',
+			esc_html(
+				sprintf(
+					/* translators: 1: reaction type label, e.g. "Likes", 2: number of reactions */
+					__( '%1$s (%2$d)', 'asdo-theme' ),
+					$attrs['label'],
+					count( $comments )
+				)
+			)
+		);
 		echo '<div class="facepile">';
 
 		foreach ( $comments as $comment ) {
-			$author_url = $comment->comment_author_url;
-			$author     = $comment->comment_author;
-			$avatar     = get_avatar( $comment, 32 );
-
-			if ( $author_url ) {
-				printf(
-					'<a href="%s" title="%s" class="u-url">%s</a>',
-					esc_url( $author_url ),
-					esc_attr( $author ),
-					wp_kses_post( $avatar )
-				);
-			} else {
-				printf(
-					'<span title="%s">%s</span>',
-					esc_attr( $author ),
-					wp_kses_post( $avatar )
-				);
-			}
+			asdo_render_reaction( $comment, $attrs['icon'] );
 		}
 
 		echo '</div></div>';
@@ -559,6 +585,93 @@ function asdo_display_reactions() {
 
 	echo '</div>';
 }
+
+/**
+ * Render a single facepile entry.
+ *
+ * @param WP_Comment $comment The reaction.
+ * @param string     $icon    Emoji fallback for reactions with no avatar.
+ */
+function asdo_render_reaction( $comment, $icon = '' ) {
+	$author = $comment->comment_author;
+	$url    = $comment->comment_author_url;
+
+	// Mentions and bookmarks often carry no author URL; link to the source post.
+	if ( ! $url && function_exists( 'get_url_from_webmention' ) ) {
+		$url = get_url_from_webmention( $comment );
+	}
+
+	$avatar = get_option( 'show_avatars' ) ? get_avatar( $comment, 32 ) : '';
+	$face   = $avatar ? wp_kses_post( $avatar ) : sprintf(
+		'<span class="reaction-icon" aria-hidden="true">%s</span>',
+		esc_html( $icon ? $icon : '🔗' )
+	);
+
+	// Without an avatar the name is the only thing identifying the reaction.
+	if ( ! $avatar ) {
+		$face .= sprintf( '<span class="reaction-name">%s</span>', esc_html( $author ) );
+	}
+
+	if ( $url ) {
+		printf(
+			'<a href="%s" title="%s" class="u-url">%s</a>',
+			esc_url( $url ),
+			esc_attr( $author ),
+			$face // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+		);
+	} else {
+		printf(
+			'<span title="%s">%s</span>',
+			esc_attr( $author ),
+			$face // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+		);
+	}
+}
+
+/**
+ * Keep the stored comment count in sync with what the comment list renders.
+ *
+ * The ActivityPub and Atmosphere plugins each filter this hook at priority 5 to
+ * drop likes and reposts, but the Webmention walker hides *every* webmention
+ * type from the comment template query — so mentions and bookmarks were counted
+ * in the "N comments" heading while never being listed. Running at priority 1
+ * settles the count before either plugin's partial exclusion sees a null, using
+ * exactly the set that asdo_display_reactions() takes over.
+ *
+ * Returning null leaves the count to core / the other plugins.
+ *
+ * @param int|null $new_count The count so far, or null if undetermined.
+ * @param int      $old_count The previous count.
+ * @param int      $post_id   The post ID.
+ * @return int|null
+ */
+function asdo_reaction_comment_count( $new_count, $old_count, $post_id ) {
+	if ( null !== $new_count || ! function_exists( 'get_webmention_comment_type_names' ) ) {
+		return $new_count;
+	}
+
+	$excluded = asdo_reaction_comment_types();
+
+	if ( empty( $excluded ) ) {
+		return $new_count;
+	}
+
+	global $wpdb;
+
+	$placeholders = implode( ', ', array_fill( 0, count( $excluded ), '%s' ) );
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	return (int) $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*) FROM {$wpdb->comments}
+			 WHERE comment_post_ID = %d AND comment_approved = '1'
+			 AND comment_type NOT IN ( {$placeholders} )",
+			array_merge( array( $post_id ), $excluded )
+		)
+	);
+	// phpcs:enable
+}
+add_filter( 'pre_wp_update_comment_count_now', 'asdo_reaction_comment_count', 1, 3 );
 
 /**
  * Custom comment callback with microformats2 markup.
@@ -671,4 +784,133 @@ function asdo_indienews_webmention_link( $urls, $post_id ) {
 	return $urls;
 }
 add_filter( 'webmention_links', 'asdo_indienews_webmention_link', 10, 2 );
+
+/**
+ * Post-publish cache warming.
+ *
+ * Relays forward an Announce carrying only the post URL, so every subscribing
+ * instance dereferences the permalink to fetch an authentic copy. Those fetches
+ * arrive together within a couple of minutes of publishing — and publishing has
+ * just purged the cache, so without warming they all regenerate through PHP at
+ * once and exhaust the LSAPI worker pool.
+ *
+ * LiteSpeed keys entries on the exact Accept header (the permalink sends
+ * `Vary: Accept` to content-negotiate HTML against ActivityPub JSON), so every
+ * distinct string federating software sends is a separate entry and has to be
+ * warmed on its own. User-Agent does not affect the key.
+ */
+
+/** Cron hook fired to warm a published post. */
+const ASDO_WARM_HOOK = 'asdo_warm_cache';
+
+/** Seconds to wait after publish before warming. */
+const ASDO_WARM_DELAY = 15;
+
+/** Accept headers to warm the permalink under — one cache entry each. */
+const ASDO_WARM_ACCEPTS = array(
+	'text/html',
+	'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+	'application/activity+json',
+	'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+);
+
+/**
+ * Queue a warm-up after a post is published or updated.
+ *
+ * Deferred to cron rather than run inline: LiteSpeed applies its purge as the
+ * publish response is sent, so warming during that same request would populate
+ * entries the purge then discards. Running under cron also keeps the loopback
+ * requests off the web worker pool.
+ *
+ * @param string  $new_status New post status.
+ * @param string  $old_status Previous post status.
+ * @param WP_Post $post       Post being transitioned.
+ */
+function asdo_schedule_cache_warm( $new_status, $old_status, $post ) {
+	if ( 'publish' !== $new_status ) {
+		return;
+	}
+
+	if ( wp_is_post_revision( $post ) || wp_is_post_autosave( $post ) ) {
+		return;
+	}
+
+	if ( ! is_post_type_viewable( $post->post_type ) ) {
+		return;
+	}
+
+	$args = array( (int) $post->ID );
+
+	if ( wp_next_scheduled( ASDO_WARM_HOOK, $args ) ) {
+		return;
+	}
+
+	wp_schedule_single_event( time() + ASDO_WARM_DELAY, ASDO_WARM_HOOK, $args );
+}
+add_action( 'transition_post_status', 'asdo_schedule_cache_warm', 10, 3 );
+
+/**
+ * Build the list of URLs to warm, as `array( $url, $accept )` pairs.
+ *
+ * @param int $post_id Published post ID.
+ * @return array[] List of [ url, accept ] pairs.
+ */
+function asdo_warm_targets( $post_id ) {
+	$targets   = array();
+	$permalink = get_permalink( $post_id );
+
+	if ( $permalink ) {
+		foreach ( ASDO_WARM_ACCEPTS as $accept ) {
+			$targets[] = array( $permalink, $accept );
+		}
+	}
+
+	// Publishing purges these too, and they carry the human traffic.
+	$targets[] = array( home_url( '/' ), 'text/html' );
+	$targets[] = array( get_feed_link(), 'application/rss+xml' );
+
+	/**
+	 * Filters the URLs warmed after publishing.
+	 *
+	 * @param array[] $targets List of [ url, accept ] pairs.
+	 * @param int     $post_id Published post ID.
+	 */
+	return apply_filters( 'asdo_warm_targets', $targets, $post_id );
+}
+
+/**
+ * Request each target so LiteSpeed stores a fresh copy before the fan-out lands.
+ *
+ * @param int $post_id Published post ID.
+ */
+function asdo_run_cache_warm( $post_id ) {
+	foreach ( asdo_warm_targets( (int) $post_id ) as $target ) {
+		list( $url, $accept ) = $target;
+
+		if ( empty( $url ) ) {
+			continue;
+		}
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout'     => 15,
+				'redirection' => 2,
+				'user-agent'  => 'asdo-cache-warmer (+' . home_url( '/' ) . ')',
+				'headers'     => array( 'Accept' => $accept ),
+			)
+		);
+
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			continue;
+		}
+
+		$result = is_wp_error( $response )
+			? $response->get_error_message()
+			: wp_remote_retrieve_response_code( $response ) . ' ' . wp_remote_retrieve_header( $response, 'x-litespeed-cache' );
+
+		error_log( sprintf( '[asdo-warm] %s [%s] -> %s', $url, $accept, $result ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
+}
+add_action( ASDO_WARM_HOOK, 'asdo_run_cache_warm' );
 

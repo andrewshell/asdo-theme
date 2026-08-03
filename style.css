@@ -692,7 +692,7 @@ small,
 	justify-content: space-between;
 }
 
-/* Reactions (ActivityPub likes & reposts) */
+/* Reactions (webmention & ActivityPub likes, reposts, mentions, bookmarks, ...) */
 
 .reactions-section {
 	margin-top: var(--spacing-12);
@@ -733,6 +733,28 @@ small,
 .facepile img {
 	border-radius: 50%;
 	display: block;
+}
+
+/* Fallback for reactions with no avatar: emoji badge plus the author name. */
+
+.facepile a:has(.reaction-name),
+.facepile span:has(.reaction-name) {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	line-height: normal;
+	font-size: var(--fontSize-0);
+	font-family: var(--fontFamily-sans);
+}
+
+.reaction-icon {
+	display: inline-block;
+	width: 2rem;
+	height: 2rem;
+	line-height: 2rem;
+	text-align: center;
+	border-radius: 50%;
+	background-color: var(--color-base);
 }
 
 /* Media queries */
