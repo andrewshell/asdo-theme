@@ -485,6 +485,13 @@ add_action( 'edit_user_profile_update', 'asdo_save_user_profile_fields' );
  * will not appear on the post at all. asdo_reaction_comment_count() keeps the
  * "N comments" heading in sync with the same list.
  *
+ * This deliberately mirrors the plugin's list verbatim, including the literal
+ * 'webmention' entry it appends for backcompat. Dropping that entry would stop
+ * legacy rows being fetched and stop them being subtracted from the count,
+ * while the walker would still hide them — counted but invisible, the exact
+ * bug this pair of functions exists to fix. Collapse it at display time
+ * instead; see asdo_canonical_reaction_type().
+ *
  * @return string[] Comment type slugs, in display order.
  */
 function asdo_reaction_comment_types() {
@@ -498,6 +505,25 @@ function asdo_reaction_comment_types() {
 	$preferred = array_values( array_intersect( array( 'like', 'repost' ), $types ) );
 
 	return array_values( array_unique( array_merge( $preferred, $types ) ) );
+}
+
+/**
+ * Canonical grouping key for a reaction comment type.
+ *
+ * The plugin's get_webmention_comment_type_names() appends a literal
+ * 'webmention' for rows written by older versions, but it is not a registered
+ * type — so get_webmention_comment_type_attr() falls through to the 'mention'
+ * definition for it (see Webmention\Comment::get_comment_type_attr). Grouping
+ * on the raw comment_type would therefore emit two facepiles with the same
+ * "Mentions" heading and the same p-mention class whenever both spellings are
+ * present. Folding the alias into 'mention' just matches what the plugin
+ * already does with the attributes.
+ *
+ * @param string $type Comment type slug.
+ * @return string Slug to group under.
+ */
+function asdo_canonical_reaction_type( $type ) {
+	return 'webmention' === $type ? 'mention' : $type;
 }
 
 /**
@@ -545,11 +571,15 @@ function asdo_display_reactions() {
 		return;
 	}
 
-	$grouped = array_fill_keys( $types, array() );
+	// Aliases collapse onto their canonical slug; the first spelling in $types
+	// fixes the group's position, and array_fill_keys folds the duplicates.
+	$grouped = array_fill_keys( array_map( 'asdo_canonical_reaction_type', $types ), array() );
 
 	foreach ( $reactions as $reaction ) {
-		if ( isset( $grouped[ $reaction->comment_type ] ) ) {
-			$grouped[ $reaction->comment_type ][] = $reaction;
+		$type = asdo_canonical_reaction_type( $reaction->comment_type );
+
+		if ( isset( $grouped[ $type ] ) ) {
+			$grouped[ $type ][] = $reaction;
 		}
 	}
 
