@@ -803,8 +803,17 @@ add_filter( 'webmention_links', 'asdo_indienews_webmention_link', 10, 2 );
 /** Cron hook fired to warm a published post. */
 const ASDO_WARM_HOOK = 'asdo_warm_cache';
 
-/** Seconds to wait after publish before warming. */
-const ASDO_WARM_DELAY = 15;
+/**
+ * Seconds to wait after publish before warming.
+ *
+ * Must stay below the offset the ActivityPub plugin uses to schedule
+ * `activitypub_process_outbox` (`time() + 3`, Scheduler::schedule_outbox_activity_for_federation).
+ * WP-Cron runs due events in timestamp order, so a smaller offset makes warming
+ * run before the activity is delivered — on the same tick, whenever that tick
+ * lands. That removes any dependence on cron granularity or on how quickly the
+ * relay fans out.
+ */
+const ASDO_WARM_DELAY = 1;
 
 /** Accept headers to warm the permalink under — one cache entry each. */
 const ASDO_WARM_ACCEPTS = array(
@@ -821,6 +830,10 @@ const ASDO_WARM_ACCEPTS = array(
  * publish response is sent, so warming during that same request would populate
  * entries the purge then discards. Running under cron also keeps the loopback
  * requests off the web worker pool.
+ *
+ * Ordering, not punctuality, is what makes this reliable — see ASDO_WARM_DELAY.
+ * Warming runs ahead of federation on the same cron tick, so the cache is warm
+ * before the activity is delivered no matter when that tick fires.
  *
  * @param string  $new_status New post status.
  * @param string  $old_status Previous post status.
@@ -894,7 +907,9 @@ function asdo_run_cache_warm( $post_id ) {
 		$response = wp_remote_get(
 			$url,
 			array(
-				'timeout'     => 15,
+				// Bounded deliberately: warming runs before federation on the
+				// same tick, so a slow target delays delivery by this much.
+				'timeout'     => 10,
 				'redirection' => 2,
 				'user-agent'  => 'asdo-cache-warmer (+' . home_url( '/' ) . ')',
 				'headers'     => array( 'Accept' => $accept ),
